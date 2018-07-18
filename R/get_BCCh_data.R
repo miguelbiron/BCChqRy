@@ -4,13 +4,18 @@
 #'     of the Central Bank of Chile (BCCh), gets the required data from their server,
 #'     and returns it as a data frame.
 #'
-#' @param path_to_iqy the path to the .iqy file. Can be relative to wd.
+#' @param path_to_iqy the path to the .iqy file. Can be a relative path.
 #' @param q_values a character vector (or something that can be coerced to it).
 #'     Should contain the values for every parameter in the query, in adequate
-#'     order. Use only if you already know the query and its parameters. If left
-#'     \code{NULL}, the program will ask the user to input these values.
-#' @return a data frame with attribute \code{data_types}, which is a character
-#'     vector that shows the kind of data stored in each column.
+#'     order. Parameters are almost always start and end date, but use only if
+#'     you are sure of this. If left \code{NULL}, the program will ask the user
+#'     to input these values.
+#' @return A data frame containing the requested data and with the following
+#'     attributes:
+#'     \enumerate{
+#'         \item{\code{data_def}: definition of the data requested}
+#'         \item{\code{data_types}: type of data stored in each column}
+#'     }
 #' @seealso Vist the BCCh database at \url{https://si3.bcentral.cl/Siete/secure/cuadros/home.aspx}.
 #'
 #' @examples
@@ -22,7 +27,12 @@
 #'
 #' @export
 get_bcch_data = function(path_to_iqy, q_values = NULL){
-  iqy_content = readLines(path_to_iqy, warn = FALSE)
+  # read iqy file
+  iqy_content = readLines(path_to_iqy,
+                          warn = FALSE,
+                          encoding = "latin1")
+
+  # parse iqy file
   api_url = iqy_content[1]
   query_params = strsplit(iqy_content[2], "&")[[1]]
   query_code = query_params[length(query_params)]
@@ -31,7 +41,10 @@ get_bcch_data = function(path_to_iqy, q_values = NULL){
                                      "^([^=]+)=\\[\"(\\w+)\",\"([\\w\\s]+)\"\\]$")[,-1]
   colnames(query_par_mat) = c("param_name", "param_name_2", "param_prompt")
 
+  # check if user provided values for parameters
   if(is.null(q_values)){
+    cat("Values not provided. Please input a value for each parameter:\n\n")
+
     # read user input
     q_values = character(nrow(query_par_mat))
     for(i in seq_along(q_values)){
@@ -41,27 +54,23 @@ get_bcch_data = function(path_to_iqy, q_values = NULL){
     }
   }
 
-  query_par_mat = cbind(query_par_mat, q_values)
+  # construct body of query for httr::POST
+  post_body = as.list(q_values)
+  pos_eq_code = as.integer(regexpr("=", query_code))
+  post_body = c(post_body, substr(query_code, pos_eq_code + 1, nchar(query_code)))
+  names(post_body) = c(query_par_mat[, "param_name"], substr(query_code, 1, pos_eq_code-1))
 
-  # construct query
-  query_url = paste0(api_url,
-                     "?",
-                     paste(
-                       query_par_mat[, "param_name"],
-                       query_par_mat[, "q_values"],
-                       sep = "=",
-                       collapse = "&"
-                     ),
-                     "&",
-                     query_code
+  # post query
+  r = httr::POST(api_url, body = post_body, encode = "form")
+  results_cells = rvest::html_text(
+    rvest::html_nodes(x     = httr::content(r),
+                      xpath = "//td[not(@colspan) and not(table)]")
   )
 
-  # get vector of data cells from html
-  results_cells = rvest::html_text(
-    rvest::html_nodes(
-      x     = xml2::read_html(query_url),
-      xpath = "//td[not(@colspan) and not(table)]"
-    )
+  # extract data definition
+  data_def = rvest::html_text(
+    rvest::html_nodes(x     = httr::content(r),
+                      xpath = "//td[@colspan]")
   )
 
   # trick to get # of cols: find position of blank cell below "FECHA"
@@ -74,6 +83,7 @@ get_bcch_data = function(path_to_iqy, q_values = NULL){
     stringsAsFactors = FALSE
   )
   names(res_df) = results_cells[1L:res_n_cols]
+  attr(res_df, "data_def") = data_def
   attr(res_df, "data_types") = results_cells[(res_n_cols+2L):(2L*res_n_cols)]
 
   # format data
