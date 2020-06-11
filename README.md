@@ -64,5 +64,5 @@ can then use in R with `BCChqRy`.
 
 ## TODO
 
-  - More testing in platforms other than Windows
+  - More testing in platforms other than Ubuntu, Windows
   - Improve error handling

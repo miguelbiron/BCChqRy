@@ -40,5 +40,5 @@ As you navigate the [database](https://si3.bcentral.cl/siete), you will eventual
 
 ## TODO
 
-- More testing in platforms other than Windows
+- More testing in platforms other than Ubuntu, Windows
 - Improve error handling
