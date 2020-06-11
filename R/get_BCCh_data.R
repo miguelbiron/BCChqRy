@@ -8,11 +8,11 @@
 #' @param q_values a character vector (or something that can be coerced to it).
 #'     Should contain the values for every parameter in the query, in adequate
 #'     order. Parameters are almost always start and end date, but use only if
-#'     you are sure of this. If left \code{NULL}, the program will ask the user
+#'     you are sure of this. If missing, the program will ask the user
 #'     to input these values.
 #' @param ... arguments passed to \code{httr::POST}. For example, you can pass
-#'     \code{httr::timeout(20)} to wait 20 seconds for the response if the default of
-#'     10 seconds is not enough.
+#'     \code{httr::timeout(20)} to wait 20 seconds for the response if the default
+#'     is not enough.
 #'
 #' @return A data frame containing the requested data and with the following
 #'     attributes:
@@ -30,7 +30,7 @@
 #' }
 #'
 #' @export
-get_bcch_data = function(path_to_iqy, q_values = NULL, ...){
+get_bcch_data = function(path_to_iqy, q_values, ...){
   # read iqy file
   iqy_content = readLines(path_to_iqy,
                           warn = FALSE,
@@ -46,7 +46,7 @@ get_bcch_data = function(path_to_iqy, q_values = NULL, ...){
   colnames(query_par_mat) = c("param_name", "param_name_2", "param_prompt")
 
   # check if user provided values for parameters
-  if(is.null(q_values)){
+  if(missing(q_values)){
     cat("Values not provided. Please input a value for each parameter:\n\n")
 
     # read user input
@@ -65,7 +65,7 @@ get_bcch_data = function(path_to_iqy, q_values = NULL, ...){
   names(post_body) = c(query_par_mat[, "param_name"], substr(query_code, 1, pos_eq_code-1))
 
   # post query
-  r = httr::POST(api_url, body = post_body, encode = "form", ...)
+  r = httr::POST(url = api_url, body = post_body, encode = "form", ...)
   results_cells = rvest::html_text(
     rvest::html_nodes(x     = httr::content(r),
                       xpath = "//td[not(@colspan) and not(table)]")
