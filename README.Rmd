@@ -36,7 +36,7 @@ get_bcch_data("UF_IVP_DIARIO.iqy", q_values = c(2018, 2018)) %>%
 
 ## How to get an .iqy file from the BCCh database
 
-As you navigate the [database](https://si3.bcentral.cl/siete), you will eventually arrive at a dataset that you'd like to download, including an appropriate frequency ("frecuencia") and calculation ("calculo"). Now, simply click the ![IQY Button](https://si3.bcentral.cl/Siete/Images/Botonera/diseno/iqy.gif) button located in the upper-right corner above the data table (its caption is "Consulta Excel dinamica"). This will download the .iqy file associated with the data you requested, which you can then use in R with `BCChqRy`.
+As you navigate the [database](https://si3.bcentral.cl/siete), you will eventually arrive at a dataset that you'd like to download, including an appropriate frequency ("frecuencia") and calculation ("calculo"). Now, simply click the ![Mi BDE](https://si3.bcentral.cl/Siete/Includes/css/images/cart_iqy8.png) button located in the upper-right corner above the data table. This will download the .iqy file associated with the data you requested, which you can then use in R with `BCChqRy`.
 
 ## TODO
 
