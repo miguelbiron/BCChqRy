@@ -41,5 +41,5 @@ get_bcch_data("UF_IVP_DIARIO.iqy")
 
 }
 \seealso{
-Vist the BCCh website at \url{https://www.bcentral.cl/}.
+Vist the BCCh database at \url{https://si3.bcentral.cl/siete}.
 }

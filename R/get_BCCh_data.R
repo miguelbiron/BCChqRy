@@ -20,7 +20,7 @@
 #'         \item{\code{data_def}: definition of the data requested}
 #'         \item{\code{data_types}: type of data stored in each column}
 #'     }
-#' @seealso Vist the BCCh website at \url{https://www.bcentral.cl/}.
+#' @seealso Vist the BCCh database at \url{https://si3.bcentral.cl/siete}.
 #'
 #' @examples
 #'
