@@ -10,13 +10,17 @@
 #'     order. Parameters are almost always start and end date, but use only if
 #'     you are sure of this. If left \code{NULL}, the program will ask the user
 #'     to input these values.
+#' @param ... arguments passed to \code{httr::POST}. For example, you can pass
+#'     \code{httr::timeout(20)} to wait 20 seconds for the response if the default of
+#'     10 seconds is not enough.
+#'
 #' @return A data frame containing the requested data and with the following
 #'     attributes:
 #'     \enumerate{
 #'         \item{\code{data_def}: definition of the data requested}
 #'         \item{\code{data_types}: type of data stored in each column}
 #'     }
-#' @seealso Vist the BCCh database at \url{https://si3.bcentral.cl/Siete/secure/cuadros/home.aspx}.
+#' @seealso Vist the BCCh website at \url{https://www.bcentral.cl/}.
 #'
 #' @examples
 #'
@@ -26,7 +30,7 @@
 #' }
 #'
 #' @export
-get_bcch_data = function(path_to_iqy, q_values = NULL){
+get_bcch_data = function(path_to_iqy, q_values = NULL, ...){
   # read iqy file
   iqy_content = readLines(path_to_iqy,
                           warn = FALSE,
@@ -61,7 +65,7 @@ get_bcch_data = function(path_to_iqy, q_values = NULL){
   names(post_body) = c(query_par_mat[, "param_name"], substr(query_code, 1, pos_eq_code-1))
 
   # post query
-  r = httr::POST(api_url, body = post_body, encode = "form")
+  r = httr::POST(api_url, body = post_body, encode = "form", ...)
   results_cells = rvest::html_text(
     rvest::html_nodes(x     = httr::content(r),
                       xpath = "//td[not(@colspan) and not(table)]")

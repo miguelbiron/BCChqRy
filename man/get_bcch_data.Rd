@@ -4,7 +4,7 @@
 \alias{get_bcch_data}
 \title{Fetch data using an .iqy file from the BCCh}
 \usage{
-get_bcch_data(path_to_iqy, q_values = NULL)
+get_bcch_data(path_to_iqy, q_values = NULL, ...)
 }
 \arguments{
 \item{path_to_iqy}{the path to the .iqy file. Can be a relative path.}
@@ -14,6 +14,10 @@ Should contain the values for every parameter in the query, in adequate
 order. Parameters are almost always start and end date, but use only if
 you are sure of this. If left \code{NULL}, the program will ask the user
 to input these values.}
+
+\item{...}{arguments passed to \code{httr::POST}. For example, you can pass
+\code{httr::timeout(20)} to wait 20 seconds for the response if the default of
+10 seconds is not enough.}
 }
 \value{
 A data frame containing the requested data and with the following
@@ -37,5 +41,5 @@ get_bcch_data("UF_IVP_DIARIO.iqy")
 
 }
 \seealso{
-Vist the BCCh database at \url{https://si3.bcentral.cl/Siete/secure/cuadros/home.aspx}.
+Vist the BCCh website at \url{https://www.bcentral.cl/}.
 }
