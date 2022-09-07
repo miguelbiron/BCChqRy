@@ -17,10 +17,10 @@ with `BCChqRy`.
 ## Installation
 
 ``` r
-if (!require(devtools)) {
-    install.packages('devtools')
-}
-devtools::install_github('miguelbiron/BCChqRy')
+if (!require(remotes)) {
+    install.packages('remotes')
+  }
+remotes::install_github('miguelbiron/BCChqRy')
 ```
 
 ## Example
